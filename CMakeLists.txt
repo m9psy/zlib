@@ -7,6 +7,7 @@ set(VERSION "1.2.11")
 
 option(ASM686 "Enable building i686 assembly implementation")
 option(AMD64 "Enable building amd64 assembly implementation")
+option(FAST_LMATCH "Enable fast longest_match implementation by https://github.com/gildor2/fast_zlib")
 
 set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Installation directory for executables")
 set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Installation directory for libraries")
@@ -109,7 +110,6 @@ set(ZLIB_SRCS
     adler32.c
     compress.c
     crc32.c
-    deflate.c
     gzclose.c
     gzlib.c
     gzread.c
@@ -122,6 +122,13 @@ set(ZLIB_SRCS
     uncompr.c
     zutil.c
 )
+
+if (FAST_LMATCH)
+	message("Alternative longest_match implementation enabled")
+	list(APPEND ZLIB_SRCS contrib/fast_longest_match/lmatch.c)
+else()
+	list(APPEND ZLIB_SRCS deflate.c)
+endif()
 
 if(NOT MINGW)
     set(ZLIB_DLL_SRCS
@@ -151,9 +158,11 @@ if(MSVC)
 		)
     elseif (AMD64)
 		ENABLE_LANGUAGE(ASM_MASM)
+		# In default cmake file 8664.c file is missed. Probably by the error
         set(ZLIB_ASMS
 			contrib/masmx64/gvmat64.asm
 			contrib/masmx64/inffasx64.asm
+			contrib/masmx64/inffas8664.c
 		)
     endif()
 
