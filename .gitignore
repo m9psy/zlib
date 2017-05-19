@@ -27,3 +27,20 @@
 
 msvc_solution
 msvc_solution64
+
+# build results
+*.tlog
+*.log
+*.res
+*.obj
+*.lst
+*.db
+*.suo
+*.lib
+*.map
+*.ipdb
+*.dll
+*.cod
+*.pdb
+*.iobj
+*.exp
